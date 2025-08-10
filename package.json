@@ -1,6 +1,6 @@
 {
   "name": "directus-extension-country-selector",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Directus interface extension for selecting countries from a comprehensive dropdown list",
   "keywords": [
     "directus",
