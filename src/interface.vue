@@ -1,10 +1,9 @@
 <template>
   <div>
-    <h3>{{ props.label }}</h3>
     <v-select
       :model-value="displayValue"
       :items="countries"
-      :placeholder="$t('Select a country')"
+      :placeholder="'Select a country'"
       :label="props.label"
       :required="props.required"
       item-value="value"
@@ -18,13 +17,13 @@
     <h3>{{ props.description }}</h3>
     <v-input
       :model-value="descriptionText"
-      :placeholder="$t('Enter description')"
+      :placeholder="'Enter description'"
       @update:model-value="onTextChange" />
   </div>
 </template>
 
 <script setup lang="ts">
-  import { countries as countriesList } from 'countries-list';
+  import { countries as countriesList, getEmojiFlag, type TCountryCode } from 'countries-list';
   import { computed, ref, watchEffect } from 'vue';
 
   const props = defineProps<{
@@ -42,10 +41,11 @@
 
   const countries = ref(
     Object.entries(countriesList).map(([code, country]) => ({
-      text: country.name,
+      text: `${getEmojiFlag(code as TCountryCode)} ${country.name}`,
       value: code
     }))
   );
+  
   const parseStoredValue = (value: string | null) => {
     if (!value) return { countryCode: null, description: '' };
     try {
