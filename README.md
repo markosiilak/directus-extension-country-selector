@@ -6,10 +6,13 @@ A Directus interface extension that provides a comprehensive country selection d
 
 - **Comprehensive Country List**: Includes all countries with ISO codes and names
 - **Search Functionality**: Easy search through countries by name
+- **Configurable Selection Modes**: Single or multiple country selection
+- **Drag & Drop Reordering**: Reorder selected countries by dragging chips
 - **Custom Labels**: Configurable field labels and descriptions
 - **Required Field Support**: Optional required field validation
 - **JSON Storage**: Stores country data in a structured JSON format
 - **Description Support**: Additional description field for each country selection
+- **Visual Feedback**: Grab/grabbing cursors and hover effects
 - **Directus UI Integration**: Uses Directus theme variables for consistent styling
 - **TypeScript Support**: Full TypeScript support with type definitions
 
@@ -41,35 +44,51 @@ Add helper text that appears below the field to guide users.
 ### Required
 Mark the field as required for validation purposes.
 
+### Multiple Selection
+Enable multiple country selection with drag & drop reordering functionality.
+
 ## Usage
 
 1. **Field Setup**:
-   - Create a field with type `string`
+   - Create a field with type `JSON` (recommended) or `string`
    - Select "Country Selector" as the interface
-   - Configure the field label, description, and required status
+   - Configure the field label, description, required status, and multiple selection mode
 
-2. **Data Storage**:
+2. **Selection Modes**:
+   - **Single Selection**: Traditional dropdown for selecting one country
+   - **Multiple Selection**: Dropdown + draggable chips for multiple countries with reordering
+
+3. **Data Storage**:
    The extension stores data in the following JSON format:
    ```json
    {
-     "countryCode": "US",
+     "countryCodes": ["US", "GB", "CA"],
      "defaultLocale": "us",
-     "description": "United States of America"
+     "description": "Selected countries description"
    }
    ```
 
-3. **Display Options**:
+4. **Display Options**:
    - **Raw**: Shows the JSON data as stored
-   - **Formatted**: Shows the country name in a readable format
+   - **Formatted**: Shows the country names in a readable format
 
 ## Example Configuration
 
 ```javascript
-// Interface configuration
+// Single selection configuration
 {
   label: "Select Country",
   description: "Choose the country for this record",
-  required: true
+  required: true,
+  multiple: false
+}
+
+// Multiple selection configuration
+{
+  label: "Select Countries",
+  description: "Choose multiple countries and drag to reorder",
+  required: false,
+  multiple: true
 }
 ```
 
@@ -78,20 +97,26 @@ Mark the field as required for validation purposes.
 ### Input Format
 The extension accepts various input formats:
 
-- **JSON Object**: `{"countryCode": "US", "defaultLocale": "us", "description": "United States"}`
-- **Country Code**: `"US"`
-- **Country Name**: `"United States"`
+- **JSON Object**: `{"countryCodes": ["US", "GB"], "defaultLocale": "us", "description": "Selected countries"}`
+- **Legacy Single**: `{"countryCode": "US", "defaultLocale": "us", "description": "United States"}`
+- **Country Code**: `"US"` (converted to array format)
 
 ### Output Format
 The extension always outputs data in this structured format:
 
 ```json
 {
-  "countryCode": "US",
-  "defaultLocale": "us", 
-  "description": "United States of America"
+  "countryCodes": ["US", "GB", "CA"],
+  "defaultLocale": "us",
+  "description": "Selected countries description"
 }
 ```
+
+### Drag & Drop Functionality
+- **Reorder**: Drag chips to change the order of selected countries
+- **Visual Feedback**: Cursor changes to grab/grabbing during drag operations
+- **Order Preservation**: The order in the `countryCodes` array reflects the user's arrangement
+- **Default Locale**: Always uses the first country in the array for the `defaultLocale` field
 
 ## Country Data
 
@@ -115,26 +140,38 @@ The extension uses the `countries-list` package which provides:
 
 ### Basic Usage
 ```javascript
-// Simple country selection
+// Single country selection
 const countryData = {
-  countryCode: "US",
+  countryCodes: ["US"],
   defaultLocale: "us",
   description: "United States of America"
+};
+
+// Multiple country selection
+const countriesData = {
+  countryCodes: ["US", "GB", "CA"],
+  defaultLocale: "us",
+  description: "Selected countries"
 };
 ```
 
 ### With Validation
 ```javascript
 // Required field validation
-if (!countryData.countryCode) {
-  throw new Error("Country is required");
+if (!countryData.countryCodes || countryData.countryCodes.length === 0) {
+  throw new Error("At least one country is required");
 }
 ```
 
 ### Display Integration
 ```javascript
-// Display the country name
-const countryName = countriesList[countryData.countryCode]?.name || countryData.countryCode;
+// Display all country names
+const countryNames = countryData.countryCodes.map(code => 
+  countriesList[code]?.name || code
+);
+
+// Display primary country name
+const primaryCountry = countriesList[countryData.defaultLocale]?.name || countryData.defaultLocale;
 ```
 
 ## Customization
@@ -167,8 +204,8 @@ const customCountries = [
 
 ## Compatibility
 
-- Directus 10.x and later
-- Field types: string
+- Directus 11.x and later
+- Field types: JSON (recommended) or string
 - Node.js >= 16.0.0
 
 ## Development

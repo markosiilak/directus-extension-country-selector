@@ -8,7 +8,7 @@ export default defineInterface({
   icon: "flag",
   description: "Select a country from a dropdown list",
   component: InterfaceComponent,
-  types: ["string"],
+  types: ["json"],
   group: "standard",
   options: [
     {
@@ -38,6 +38,16 @@ export default defineInterface({
       meta: {
         interface: "boolean",
         width: "half",
+      },
+    },
+    {
+      field: "multiple",
+      name: "Multiple Selection",
+      type: "boolean",
+      meta: {
+        interface: "boolean",
+        width: "half",
+        note: "Allow selection of multiple countries",
       },
     },
   ],
