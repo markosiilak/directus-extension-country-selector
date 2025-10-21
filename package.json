@@ -50,7 +50,7 @@
     "node": ">=16.0.0"
   },
   "peerDependencies": {
-    "@directus/extensions-sdk": "^16.0.0"
+    "@directus/extensions-sdk": "^15.0.0"
   },
   "dependencies": {
     "countries-list": "^3.1.1"
